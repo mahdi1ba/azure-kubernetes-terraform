@@ -34,9 +34,9 @@ module "in28minutes-cluster" {
     #subnets = data.aws_subnet_ids.subnets.ids
     vpc_id = aws_default_vpc.default.id
     #vpc_id = "vpc-1234556abcdef"
-    node_groups = [
+    eks_managed_node_groups = [
         {
-            instance_type = "t2.micro"
+            instance_types = ["t2.micro"]
             max_capacity = 5
             desired_capacity =2
             min_capacity = 2
