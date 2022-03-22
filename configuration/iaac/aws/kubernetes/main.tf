@@ -1,7 +1,7 @@
 
 
-# terraform-backend-state-123
-#access key ID : AKIAUPKWME4XYPDF3LQW
+# terraform-backend-state-1234
+#access key ID : AKIAW6RDS7DVFCQ7BMXB
 
 terraform {
     backend "s3" {
@@ -30,13 +30,13 @@ module "in28minutes-cluster" {
     source = "terraform-aws-modules/eks/aws"
     cluster_name="in28minutes-cluster"
     cluster_version="1.14"
-    subnets = ["subnet-01550d52832700ac5","subnet-08a42ade7d72308ef"]
+    subnets = ["subnet-0113a6634c96dcb29","subnet-0b0dc0b63f913e8b3"]
     #subnets = data.aws_subnet_ids.subnets.ids
     vpc_id = aws_default_vpc.default.id
     #vpc_id = "vpc-1234556abcdef"
-    node_groups = [
+    eks_managed_node_groups = [
         {
-            instance_type = "t2.micro"
+            instance_types = ["t2.micro"]
             max_capacity = 5
             desired_capacity =2
             min_capacity = 2
