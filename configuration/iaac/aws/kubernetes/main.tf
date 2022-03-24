@@ -16,12 +16,7 @@ resource "aws_default_vpc" "default" {
 #data "aws_subnet_ids" "subnets" {
 #    vpc_id = aws_default_vpc.default.id 
 #}
-provider "kubernetes" {
-    host = data.aws_eks_cluster.cluster.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-    token = data.aws_eks_cluster.cluster.token
-    load_config_file = false
-}
+
 module "in28minutes-cluster" {
     source = "terraform-aws-modules/eks/aws"
     cluster_name="in28minutes-cluster"
@@ -43,10 +38,16 @@ data "aws_subnet_ids" "subnets" {
     vpc_id = aws_default_vpc.default.id 
 }
 data "aws_eks_cluster" "cluster"{
-    name = module.in28minutes-cluster.cluster_id
+    name = module.in28minutes-cluster.cluster_name
 }
 data "aws_eks_cluster_auth" "cluster"{
-    name = module.in28minutes-cluster.cluster_id
+    name = module.in28minutes-cluster.cluster_name
+}
+provider "kubernetes" {
+    host = data.aws_eks_cluster.cluster.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+    token = data.aws_eks_cluster.cluster.token
+    load_config_file = false
 }
 #we will use serviceaccount to connect to k8s cluster in CI/CD mode
 # serviceaccount needs permissions to create deployments
