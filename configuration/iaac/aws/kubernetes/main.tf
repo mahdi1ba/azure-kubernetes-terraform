@@ -38,10 +38,10 @@ data "aws_subnet_ids" "subnets" {
     vpc_id = aws_default_vpc.default.id 
 }
 data "aws_eks_cluster" "cluster"{
-    name = module.in28minutes-cluster.cluster_name
+    name = module.in28minutes-cluster.cluster_id
 }
 data "aws_eks_cluster_auth" "cluster"{
-    name = module.in28minutes-cluster.cluster_name
+    name = module.in28minutes-cluster.cluster_id
 }
 provider "kubernetes" {
     host = data.aws_eks_cluster.cluster.endpoint
