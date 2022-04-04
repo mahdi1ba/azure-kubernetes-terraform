@@ -1,0 +1,64 @@
+
+
+trigger:
+- main
+
+resources:
+- repo: self
+
+variables:
+  tag: 133
+  #'$(Build.BuildId)'
+
+stages:
+- stage: Build
+  displayName: Build image
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    # - task: Docker@2
+    #   displayName: Build an image
+    #   inputs:
+    #     command: build
+    #     dockerfile: '**/Dockerfile'
+    #     tags: |
+    #       $(tag)
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: '**/*'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'manifest'
+        publishLocation: 'Container'
+#Build Docker
+#Push Docker 
+# Deploy to k8s cluster
+#download 
+- stage: Deploy
+  displayName: Deploy image
+  jobs:
+  - job: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        buildType: 'current'
+        artifactName: 'manifests'
+        itemPattern: '**/*.yaml'
+        targetPath: '$(System.ArtifactsDirectory)'
+#apply - kubectl apply -f deployment.yaml
+    - task: KubernetesManifest@0
+      inputs:
+        action: 'deploy'
+        kubernetesServiceConnection: ''
+        namespace: 'default'
+        manifests: '$(System.ArtifactsDirectory)/configuration/iaac/kubernetes/deployment.yaml'
+        containers: 'mahdibenayed1/project-devops:$(tag)'
